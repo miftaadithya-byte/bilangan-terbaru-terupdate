@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b1020">
+<title>MathQuest SMP Kelas VII – Bilangan Bulat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="bg-stars" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="logo" aria-hidden="true">🚀</span>
+    <div><h1>MathQuest</h1><p>SMP Kelas VII · Bilangan Bulat</p></div>
+  </div>
+  <nav class="tabs" id="mainNav" aria-label="Navigasi utama">
+    <button class="tab-btn active" data-tab="explore"><span>🧪</span><b>Eksplorasi</b></button>
+    <button class="tab-btn" data-tab="summary"><span>📘</span><b>Rangkuman</b></button>
+    <button class="tab-btn" data-tab="lkm"><span>📝</span><b>LKM</b></button>
+    <button class="tab-btn" data-tab="play"><span>🎯</span><b>Latihan</b></button>
+    <button class="tab-btn" data-tab="teacher"><span>👩‍🏫</span><b>Guru</b></button>
+  </nav>
+  <div class="userchip">
+    <span id="syncBadge" class="badge" title="Status sinkronisasi">💾 Lokal</span>
+    <span id="userName">Tamu</span>
+    <button id="btnSwitchUser" class="btn ghost sm" type="button">Ganti</button>
+  </div>
+</header>
+
+<main>
+<!-- ===================== EKSPLORASI (DISCOVERY) ===================== -->
+<section id="tab-explore" class="tab active">
+  <div class="card hero">
+    <h2>🧪 Zona Eksplorasi Mandiri</h2>
+    <p>Misi kamu: <b>temukan sendiri</b> hubungan antara pengurangan dan penjumlahan bilangan bulat. Gerakkan roket, catat hasilnya, tulis dugaanmu, lalu uji. Rangkuman baru terbuka setelah kamu menemukan polanya.</p>
+    <div id="progressSteps" class="steps" aria-label="Progres eksplorasi"></div>
+  </div>
+
+  <div class="card">
+    <h3>1 · Laboratorium Roket</h3>
+    <p class="muted">Aturan roket: roket mulai menghadap <b>kanan</b> (arah positif). Tanda <b>+</b> → roket tetap menghadap. Tanda <b>−</b> → roket <b>putar balik</b>. Bilangan positif → <b>maju</b>, bilangan negatif → <b>mundur</b>.</p>
+    <div class="builder">
+      <label>a<input id="labA" type="text" inputmode="text" value="3" autocomplete="off" aria-label="Bilangan pertama"></label>
+      <label>Operasi<select id="labOp" aria-label="Operasi"><option value="+">+</option><option value="-" selected>−</option></select></label>
+      <label>b<input id="labB" type="text" inputmode="text" value="5" autocomplete="off" aria-label="Bilangan kedua"></label>
+      <button id="btnPrep" class="btn primary" type="button">Siapkan Roket</button>
+    </div>
+    <div class="expr-chip" id="labExprChip">3 − 5 = ?</div>
+    <div class="canvas-wrap"><canvas id="labCanvas" aria-label="Garis bilangan interaktif" role="img"></canvas></div>
+    <div class="legend">
+      <span><i class="dot blue"></i>Titik awal</span>
+      <span><i class="dot green"></i>Gerak ke arah positif (kanan)</span>
+      <span><i class="dot red"></i>Gerak ke arah negatif (kiri)</span>
+      <span><i class="dot gold"></i>Hasil</span>
+    </div>
+    <p id="labNote" class="note" aria-live="polite">Tekan “Siapkan Roket” untuk memulai.</p>
+    <div class="controls">
+      <button id="btnTurn" class="btn" type="button">↻ Putar Balik</button>
+      <label class="inline">Langkah<input id="labN" type="number" min="1" max="30" value="1"></label>
+      <button id="btnForward" class="btn green" type="button">Maju ▶</button>
+      <button id="btnBackward" class="btn red" type="button">◀ Mundur</button>
+    </div>
+    <div class="controls">
+      <button id="btnRecord" class="btn primary" type="button">📌 Catat Posisi Akhir ke Tabel</button>
+      <button id="btnAuto" class="btn ghost" type="button">🤖 Tunjukkan caranya</button>
+      <button id="btnLabReset" class="btn ghost" type="button">Ulangi</button>
+    </div>
+    <div class="posline">Posisi roket: <b id="labPos">–</b></div>
+    <ul id="labLog" class="log"></ul>
+  </div>
+
+  <div class="card">
+    <h3>2 · Tantangan Pasangan Soal</h3>
+    <p class="muted">Kerjakan kedua soal di tiap pasangan dengan roket, lalu catat hasilnya. Perhatikan: apa yang sama? apa yang berbeda?</p>
+    <div id="pairList" class="pairs"></div>
+    <h4>Tabel Pengamatan</h4>
+    <div class="table-wrap">
+      <table class="tbl"><thead><tr><th>Soal</th><th>Hasil</th></tr></thead><tbody id="obsBody"></tbody></table>
+    </div>
+    <button id="btnClearObs" class="btn ghost sm" type="button">Kosongkan tabel</button>
+  </div>
+
+  <div class="card">
+    <h3>3 · Temukan Aturannya</h3>
+    <p class="muted">Lihat tabel pengamatanmu, pikirkan 3 pertanyaan ini, lalu pilih jawaban yang hasilnya sama. Tekan 💡 kalau butuh petunjuk.</p>
+    <ol id="qList" class="qlist"></ol>
+    <div class="hyp-sent"><label for="hyp1">Menurut tabelmu, <b>3 − 5</b> hasilnya sama dengan …</label>
+      <select id="hyp1"><option value="">Pilih jawaban…</option><option value="sendiri">3 + 5</option><option value="lawan">3 + (−5)</option><option value="nol">3 + 0</option></select></div>
+    <div class="hyp-sent"><label for="hyp2">Menurut tabelmu, <b>2 − (−4)</b> hasilnya sama dengan …</label>
+      <select id="hyp2"><option value="">Pilih jawaban…</option><option value="sendiri">2 + (−4)</option><option value="lawan">2 + 4</option><option value="nol">2 + 0</option></select></div>
+    <div class="controls">
+      <button id="btnTestHyp" class="btn primary" type="button">🔍 Periksa Jawabanku</button>
+      <button id="btnAssist" class="btn ghost" type="button" hidden>Buka rangkuman dengan bantuan</button>
+    </div>
+    <div id="hypFeedback" class="feedback" aria-live="polite" hidden></div>
+  </div>
+</section>
+
+<!-- ===================== RANGKUMAN ===================== -->
+<section id="tab-summary" class="tab">
+  <div id="sumLocked" class="card center">
+    <div class="big-emoji">🔒</div>
+    <h2>Rangkuman masih terkunci</h2>
+    <p class="muted">Temukan polanya dulu di Zona Eksplorasi, tulis hipotesismu, lalu uji. Setelah itu rangkuman konsep terbuka.</p>
+    <button class="btn primary go-tab" data-go="explore" type="button">Kembali ke Eksplorasi</button>
+  </div>
+  <div id="sumContent" hidden>
+    <div class="card">
+      <h2>🎉 Temuanmu</h2>
+      <div id="sumHyp" class="quote"></div>
+    </div>
+    <div class="card">
+      <h2>📘 Rangkuman Konsep</h2>
+      <div class="rules">
+        <div class="rule"><b>Mengurangi bilangan positif</b><div class="formula">a − b = a + (−b)</div><p>Mengurangi sama dengan menambah <i>lawan</i> bilangan itu.</p></div>
+        <div class="rule"><b>Mengurangi bilangan negatif</b><div class="formula">a − (−b) = a + b</div><p>Lawan dari bilangan negatif adalah bilangan positif.</p></div>
+      </div>
+      <h4>Lihat peragaannya</h4>
+      <div class="controls">
+        <button class="btn sum-demo" data-a="3" data-op="-" data-b="5" type="button">3 − 5</button>
+        <button class="btn sum-demo" data-a="3" data-op="+" data-b="-5" type="button">3 + (−5)</button>
+        <button class="btn sum-demo" data-a="2" data-op="-" data-b="-4" type="button">2 − (−4)</button>
+        <button class="btn sum-demo" data-a="-6" data-op="-" data-b="-9" type="button">−6 − (−9)</button>
+      </div>
+      <div class="canvas-wrap"><canvas id="sumCanvas" aria-label="Peragaan garis bilangan" role="img"></canvas></div>
+      <p id="sumNote" class="note" aria-live="polite">Pilih salah satu contoh di atas.</p>
+      <button class="btn primary go-tab" data-go="lkm" type="button">Lanjut isi LKM →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== LKM ===================== -->
+<section id="tab-lkm" class="tab">
+  <div class="card">
+    <h2>📝 LKM Digital</h2>
+    <p class="muted">Empat tahap penemuan konsep. Jawabanmu tersimpan otomatis di perangkat ini; tekan <b>Kumpulkan</b> untuk mengirim ke guru.</p>
+    <div id="lkmSteps" class="stepper">
+      <button class="lkm-step active" data-step="0" type="button"><b>1</b> Observation</button>
+      <button class="lkm-step" data-step="1" type="button"><b>2</b> Hypothesis</button>
+      <button class="lkm-step" data-step="2" type="button"><b>3</b> Experiment</button>
+      <button class="lkm-step" data-step="3" type="button"><b>4</b> Conclusion</button>
+    </div>
+
+    <div class="lkm-panel active" id="lkm-p0">
+      <h3>Observation (Pengamatan)</h3>
+      <div class="table-wrap"><table class="tbl"><thead><tr><th>Soal</th><th>Hasil</th></tr></thead><tbody id="lkmObsBody"></tbody></table></div>
+      <label class="field">Bandingkan hasil tiap pasangan soal pada tabel. Apa yang kamu perhatikan?<textarea data-lkm="o1" rows="3"></textarea></label>
+      <label class="field">Saat roket mengerjakan tanda “−”, apa yang kamu lakukan pada arah hadap roket? Jelaskan dengan kata-katamu.<textarea data-lkm="o2" rows="3"></textarea></label>
+      <label class="field">Pertanyaan atau kejanggalan yang kamu temukan (opsional)<textarea data-lkm="o3" rows="2"></textarea></label>
+    </div>
+
+    <div class="lkm-panel" id="lkm-p1">
+      <h3>Hypothesis (Dugaan)</h3>
+      <label class="field">Dugaanku: mengurangi bilangan positif (a − b) sama dengan ...<textarea data-lkm="hip1" rows="3"></textarea></label>
+      <label class="field">Dugaanku: mengurangi bilangan negatif (a − (−b)) sama dengan ...<textarea data-lkm="hip2" rows="3"></textarea></label>
+    </div>
+
+    <div class="lkm-panel" id="lkm-p2">
+      <h3>Experiment (Percobaan)</h3>
+      <p class="muted">Pilih bilangan bulat a dan b sesuka kamu (boleh negatif). Gunakan roket di Zona Eksplorasi atau hitung sendiri, lalu isi keempat hasilnya. Tanda ✓/✗ muncul otomatis.</p>
+      <div class="table-wrap">
+        <table class="tbl exp">
+          <thead><tr><th>a</th><th>b</th><th>a − b</th><th>a + (−b)</th><th>a − (−b)</th><th>a + b</th></tr></thead>
+          <tbody id="expBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="lkm-panel" id="lkm-p3">
+      <h3>Conclusion (Kesimpulan)</h3>
+      <label class="field">Tuliskan kesimpulanmu tentang hubungan pengurangan dan penjumlahan bilangan bulat dengan kalimatmu sendiri.<textarea data-lkm="concl" rows="4"></textarea></label>
+      <label class="field">Refleksi: bagian mana yang paling sulit? Apa yang akan kamu lakukan agar lebih paham?<textarea data-lkm="refl" rows="3"></textarea></label>
+      <label class="field">Seberapa yakin kamu dengan kesimpulanmu?
+        <select data-lkm="conf"><option value="">Pilih…</option><option value="1">1 – Belum yakin</option><option value="2">2 – Cukup yakin</option><option value="3">3 – Yakin</option><option value="4">4 – Sangat yakin</option></select>
+      </label>
+    </div>
+
+    <div class="controls between">
+      <button id="lkmPrev" class="btn ghost" type="button">← Sebelumnya</button>
+      <button id="lkmNext" class="btn" type="button">Berikutnya →</button>
+    </div>
+    <div class="controls">
+      <button id="btnSubmitLkm" class="btn primary" type="button">📤 Kumpulkan LKM</button>
+      <button id="btnPdfMine" class="btn ghost" type="button">⬇ Unduh PDF</button>
+    </div>
+    <p id="lkmStatus" class="note" aria-live="polite"></p>
+  </div>
+</section>
+
+<!-- ===================== LATIHAN & KUIS ===================== -->
+<section id="tab-play" class="tab">
+  <div id="playStart" class="card">
+    <h2>🎯 Latihan HOTS &amp; Kuis Evaluasi</h2>
+    <p class="muted">Soal menyesuaikan kemampuanmu: benar dua kali berturut-turut → level naik; salah → level turun. Setiap jawaban salah akan dibahas dengan animasi garis bilangan.</p>
+    <div class="modes">
+      <button class="mode-card" data-mode="hitung" type="button"><span>🧮</span><b>Latihan Hitung</b><small>15 soal bank · 3 level</small></button>
+      <button class="mode-card" data-mode="cerita" type="button"><span>📖</span><b>Soal Cerita HOTS</b><small>15 soal kontekstual · 3 level</small></button>
+      <button class="mode-card" data-mode="kuis" type="button"><span>🏆</span><b>Kuis Evaluasi</b><small>10 soal campuran · nilai dikirim ke guru</small></button>
+    </div>
+  </div>
+
+  <div id="playGame" class="card" hidden>
+    <div class="pg-top">
+      <div class="progress"><i id="pgProgress"></i></div>
+      <div class="pg-meta"><span id="pgCount">1/10</span><span id="pgLevel" class="pill">Level 1</span><span id="pgStreak" class="pill">🔥 0</span></div>
+    </div>
+    <div id="pgQ" class="question"></div>
+    <div id="pgOpts" class="opts" role="group" aria-label="Pilihan jawaban"></div>
+    <div class="controls">
+      <button id="btnHint" class="btn ghost" type="button">💡 Petunjuk</button>
+      <button id="btnQuit" class="btn ghost" type="button">Selesai</button>
+    </div>
+    <p id="pgHint" class="note" hidden></p>
+    <div id="pgFeedback" class="feedback" aria-live="polite" hidden></div>
+    <button id="btnNext" class="btn primary" type="button" hidden>Lanjut →</button>
+  </div>
+
+  <div id="playEnd" class="card center" hidden>
+    <div class="big-emoji">🏁</div>
+    <h2>Sesi selesai!</h2>
+    <div id="endScore" class="score"></div>
+    <p id="endDetail" class="muted"></p>
+    <p id="endSync" class="note"></p>
+    <div id="endReview" class="review"></div>
+    <div class="controls center">
+      <button id="btnAgain" class="btn primary" type="button">Main lagi</button>
+      <button id="btnHome" class="btn ghost" type="button">Menu</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== GURU ===================== -->
+<section id="tab-teacher" class="tab">
+  <div id="tGate" class="card">
+    <h2>👩‍🏫 Panel Guru</h2>
+    <p class="muted">Masukkan PIN guru untuk melihat rekap nilai, status LKM, serta mengunduh PDF dan CSV.</p>
+    <form id="pinForm" class="builder" autocomplete="off">
+      <label>PIN<input id="pinInput" type="password" inputmode="numeric" maxlength="16" autocomplete="off"></label>
+      <button class="btn primary" type="submit">Masuk</button>
+    </form>
+    <p id="pinMsg" class="note" aria-live="polite"></p>
+  </div>
+
+  <div id="tPanel" hidden>
+    <div class="card">
+      <div class="controls between">
+        <h2>Rekap Kelas</h2>
+        <span id="tMode" class="badge"></span>
+      </div>
+      <div id="tStats" class="stats"></div>
+      <div class="controls">
+        <input id="tSearch" class="search" type="search" placeholder="Cari nama…" aria-label="Cari nama">
+        <select id="tKelas" aria-label="Filter kelas"><option value="">Semua kelas</option></select>
+        <button id="btnTReload" class="btn" type="button">↻ Muat ulang</button>
+      </div>
+      <h3>Rekap per Siswa</h3>
+      <div class="table-wrap">
+        <table class="tbl"><thead><tr><th>Nama</th><th>Kelas</th><th>Kuis terbaik</th><th>Latihan</th><th>LKM</th><th>Skor LKM</th><th>PDF</th><th>Aksi</th></tr></thead><tbody id="tRekapBody"></tbody></table>
+      </div>
+      <h3>Riwayat Nilai</h3>
+      <div class="table-wrap">
+        <table class="tbl"><thead><tr><th>Waktu</th><th>Nama</th><th>Kelas</th><th>Mode</th><th>Skor</th><th>Benar</th><th>Level</th></tr></thead><tbody id="tRiwayatBody"></tbody></table>
+      </div>
+      <div class="controls">
+        <button id="btnCsvRekap" class="btn" type="button">⬇ CSV Rekap</button>
+        <button id="btnCsvRiwayat" class="btn" type="button">⬇ CSV Riwayat</button>
+        <button id="btnTReset" class="btn red" type="button">🗑 Reset Semua Data</button>
+        <button id="btnTLogout" class="btn ghost" type="button">Keluar</button>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ===================== MODAL ===================== -->
+<div id="loginModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+  <form id="loginForm" class="modal-box" autocomplete="off">
+    <div class="big-emoji">👩‍🚀</div>
+    <h2 id="loginTitle">Selamat datang, Penjelajah!</h2>
+    <p class="muted">Isi identitasmu agar hasil belajarmu tersimpan.</p>
+    <label class="field">Nama lengkap<input id="inpNama" type="text" maxlength="60" required></label>
+    <label class="field">Kelas<input id="inpKelas" type="text" list="kelasList" maxlength="20" placeholder="contoh: VII-A" required></label>
+    <datalist id="kelasList"><option>VII-A</option><option>VII-B</option><option>VII-C</option><option>VII-D</option><option>VII-E</option><option>VII-F</option><option>VII-G</option><option>VII-H</option></datalist>
+    <button class="btn primary block" type="submit">Mulai Misi 🚀</button>
+  </form>
+</div>
+
+<div id="fbModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="fbTitle">
+  <div class="modal-box wide">
+    <h2 id="fbTitle">Yuk, lihat di garis bilangan</h2>
+    <div class="canvas-wrap"><canvas id="fbCanvas" aria-label="Pembahasan garis bilangan" role="img"></canvas></div>
+    <div class="legend">
+      <span><i class="dot blue"></i>Mulai</span><span><i class="dot green"></i>Ke kanan</span><span><i class="dot red"></i>Ke kiri</span><span><i class="dot gold"></i>Jawaban benar</span><span><i class="dot orange"></i>Jawabanmu</span>
+    </div>
+    <p id="fbNote" class="note" aria-live="polite"></p>
+    <ol id="fbSteps" class="steps-list"></ol>
+    <div class="controls">
+      <button id="btnReplay" class="btn" type="button">↺ Putar ulang</button>
+      <button id="btnFbClose" class="btn primary" type="button">Mengerti, lanjut</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+<script src="script.js" defer></script>
+</body>
+</html>
