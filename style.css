@@ -127,14 +127,14 @@ label.inline input{width:70px;margin:0;text-align:center}
 
 .hyp-sent{margin:.9rem 0;font-size:.95rem}
 .hyp-sent select{display:block;width:100%;margin-top:.4rem;background:#0e1530;border:1px solid var(--line);border-radius:12px;padding:.65rem .75rem}
-/* LKM */
+/* LKPD */
 .stepper{display:grid;grid-template-columns:repeat(2,1fr);gap:.4rem;margin:.8rem 0}
-.lkm-step{background:#0e1530;border:1px solid var(--line);border-radius:12px;padding:.5rem;cursor:pointer;font-size:.82rem;font-weight:600;color:var(--mut)}
-.lkm-step b{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--card2);margin-right:5px;font-size:.75rem}
-.lkm-step.active{border-color:var(--pri);color:var(--txt)}
-.lkm-step.done b{background:var(--ok);color:#06241b}
-.lkm-panel{display:none}
-.lkm-panel.active{display:block;animation:fade .3s}
+.lkpd-step{background:#0e1530;border:1px solid var(--line);border-radius:12px;padding:.5rem;cursor:pointer;font-size:.82rem;font-weight:600;color:var(--mut)}
+.lkpd-step b{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--card2);margin-right:5px;font-size:.75rem}
+.lkpd-step.active{border-color:var(--pri);color:var(--txt)}
+.lkpd-step.done b{background:var(--ok);color:#06241b}
+.lkpd-panel{display:none}
+.lkpd-panel.active{display:block;animation:fade .3s}
 
 /* Play */
 .modes{display:grid;gap:.7rem;grid-template-columns:1fr;margin-top:.8rem}
