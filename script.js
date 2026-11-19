@@ -166,7 +166,16 @@ class NumberLine {
     }
     // panah langkah (hijau = ke kanan/positif, merah = ke kiri/negatif)
     const all = this.segs.slice(); if (this.live && this.live.to !== this.live.from) all.push(this.live);
-    all.forEach((s, i) => this.arrow(X(s.from), X(s.to), ay - 26, 26 + (i % 3) * 16, s.to > s.from, s.to - s.from));
+    // dua jalur: gelombang maju (positif) di jalur atas, gelombang mundur (negatif) di jalur bawah agar tidak bentrok
+    // di tiap jalur, tinggi gelombang bertingkat (naik bergantian) agar tiap langkah mudah dibedakan.
+    // Tinggi jalur atas (min 32) selalu > jalur bawah (maks 28), jadi kedua jalur tidak pernah berpotongan.
+    const HP = [32, 42, 52], HN = [14, 21, 28];
+    let ip = 0, ineg = 0;
+    all.forEach(s => {
+      const pos = s.to > s.from;
+      const hgt = pos ? HP[ip++ % HP.length] : HN[ineg++ % HN.length];
+      this.arrow(X(s.from), X(s.to), pos ? ay - 24 : ay - 6, hgt, pos, s.to - s.from);
+    });
     // penanda bawah
     const tag = (v, label, color, row) => {
       const x = X(v), tx = Math.min(w - 34, Math.max(34, x));
@@ -198,7 +207,8 @@ class NumberLine {
     ctx.lineTo(x2 - 10 * Math.cos(ang + .45), y - 10 * Math.sin(ang + .45)); ctx.closePath(); ctx.fill();
     if (Math.abs(x2 - x1) > 34) {
       ctx.font = '700 11px "Plus Jakarta Sans",system-ui,sans-serif'; ctx.textAlign = 'center';
-      ctx.fillText((delta > 0 ? '+' : '−') + Math.abs(Math.round(delta * 100) / 100), cx, y - hgt - 5);
+      // label maju di atas puncak gelombang; label mundur di dalam lengkungan (jalur bawah)
+      ctx.fillText((delta > 0 ? '+' : '−') + Math.abs(Math.round(delta * 100) / 100), cx, positive ? y - hgt - 5 : y - hgt + 12);
     }
   }
   rocket(x, y, fv) {
