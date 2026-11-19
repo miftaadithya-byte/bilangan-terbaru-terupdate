@@ -21,7 +21,7 @@
   <nav class="tabs" id="mainNav" aria-label="Navigasi utama">
     <button class="tab-btn active" data-tab="explore"><span>🧪</span><b>Eksplorasi</b></button>
     <button class="tab-btn" data-tab="summary"><span>📘</span><b>Rangkuman</b></button>
-    <button class="tab-btn" data-tab="lkm"><span>📝</span><b>LKM</b></button>
+    <button class="tab-btn" data-tab="lkpd"><span>📝</span><b>LKPD</b></button>
     <button class="tab-btn" data-tab="play"><span>🎯</span><b>Latihan</b></button>
     <button class="tab-btn" data-tab="teacher"><span>👩‍🏫</span><b>Guru</b></button>
   </nav>
@@ -136,38 +136,38 @@
       </div>
       <div class="canvas-wrap"><canvas id="sumCanvas" aria-label="Peragaan garis bilangan" role="img"></canvas></div>
       <p id="sumNote" class="note" aria-live="polite">Pilih salah satu contoh di atas.</p>
-      <button class="btn primary go-tab" data-go="lkm" type="button">Lanjut isi LKM →</button>
+      <button class="btn primary go-tab" data-go="lkpd" type="button">Lanjut isi LKPD →</button>
     </div>
   </div>
 </section>
 
-<!-- ===================== LKM ===================== -->
-<section id="tab-lkm" class="tab">
+<!-- ===================== LKPD ===================== -->
+<section id="tab-lkpd" class="tab">
   <div class="card">
-    <h2>📝 LKM Digital</h2>
+    <h2>📝 LKPD Digital</h2>
     <p class="muted">Empat tahap penemuan konsep. Jawabanmu tersimpan otomatis di perangkat ini; tekan <b>Kumpulkan</b> untuk mengirim ke guru.</p>
-    <div id="lkmSteps" class="stepper">
-      <button class="lkm-step active" data-step="0" type="button"><b>1</b> Observation</button>
-      <button class="lkm-step" data-step="1" type="button"><b>2</b> Hypothesis</button>
-      <button class="lkm-step" data-step="2" type="button"><b>3</b> Experiment</button>
-      <button class="lkm-step" data-step="3" type="button"><b>4</b> Conclusion</button>
+    <div id="lkpdSteps" class="stepper">
+      <button class="lkpd-step active" data-step="0" type="button"><b>1</b> Observation</button>
+      <button class="lkpd-step" data-step="1" type="button"><b>2</b> Hypothesis</button>
+      <button class="lkpd-step" data-step="2" type="button"><b>3</b> Experiment</button>
+      <button class="lkpd-step" data-step="3" type="button"><b>4</b> Conclusion</button>
     </div>
 
-    <div class="lkm-panel active" id="lkm-p0">
+    <div class="lkpd-panel active" id="lkpd-p0">
       <h3>Observation (Pengamatan)</h3>
-      <div class="table-wrap"><table class="tbl"><thead><tr><th>Soal</th><th>Hasil</th></tr></thead><tbody id="lkmObsBody"></tbody></table></div>
-      <label class="field">Bandingkan hasil tiap pasangan soal pada tabel. Apa yang kamu perhatikan?<textarea data-lkm="o1" rows="3"></textarea></label>
-      <label class="field">Saat roket mengerjakan tanda “−”, apa yang kamu lakukan pada arah hadap roket? Jelaskan dengan kata-katamu.<textarea data-lkm="o2" rows="3"></textarea></label>
-      <label class="field">Pertanyaan atau kejanggalan yang kamu temukan (opsional)<textarea data-lkm="o3" rows="2"></textarea></label>
+      <div class="table-wrap"><table class="tbl"><thead><tr><th>Soal</th><th>Hasil</th></tr></thead><tbody id="lkpd ObsBody"></tbody></table></div>
+      <label class="field">Bandingkan hasil tiap pasangan soal pada tabel. Apa yang kamu perhatikan?<textarea data-lkpd="o1" rows="3"></textarea></label>
+      <label class="field">Saat roket mengerjakan tanda “−”, apa yang kamu lakukan pada arah hadap roket? Jelaskan dengan kata-katamu.<textarea data-lkpd="o2" rows="3"></textarea></label>
+      <label class="field">Pertanyaan atau kejanggalan yang kamu temukan (opsional)<textarea data-lkpd="o3" rows="2"></textarea></label>
     </div>
 
-    <div class="lkm-panel" id="lkm-p1">
+    <div class="lkpd-panel" id="lkpd-p1">
       <h3>Hypothesis (Dugaan)</h3>
-      <label class="field">Dugaanku: mengurangi bilangan positif (a − b) sama dengan ...<textarea data-lkm="hip1" rows="3"></textarea></label>
-      <label class="field">Dugaanku: mengurangi bilangan negatif (a − (−b)) sama dengan ...<textarea data-lkm="hip2" rows="3"></textarea></label>
+      <label class="field">Dugaanku: mengurangi bilangan positif (a − b) sama dengan ...<textarea data-lkpd="hip1" rows="3"></textarea></label>
+      <label class="field">Dugaanku: mengurangi bilangan negatif (a − (−b)) sama dengan ...<textarea data-lkpd="hip2" rows="3"></textarea></label>
     </div>
 
-    <div class="lkm-panel" id="lkm-p2">
+    <div class="lkpd-panel" id="lkpd-p2">
       <h3>Experiment (Percobaan)</h3>
       <p class="muted">Pilih bilangan bulat a dan b sesuka kamu (boleh negatif). Gunakan roket di Zona Eksplorasi atau hitung sendiri, lalu isi keempat hasilnya. Tanda ✓/✗ muncul otomatis.</p>
       <div class="table-wrap">
@@ -178,24 +178,24 @@
       </div>
     </div>
 
-    <div class="lkm-panel" id="lkm-p3">
+    <div class="lkpd-panel" id="lkpd-p3">
       <h3>Conclusion (Kesimpulan)</h3>
-      <label class="field">Tuliskan kesimpulanmu tentang hubungan pengurangan dan penjumlahan bilangan bulat dengan kalimatmu sendiri.<textarea data-lkm="concl" rows="4"></textarea></label>
-      <label class="field">Refleksi: bagian mana yang paling sulit? Apa yang akan kamu lakukan agar lebih paham?<textarea data-lkm="refl" rows="3"></textarea></label>
+      <label class="field">Tuliskan kesimpulanmu tentang hubungan pengurangan dan penjumlahan bilangan bulat dengan kalimatmu sendiri.<textarea data-lkpd="concl" rows="4"></textarea></label>
+      <label class="field">Refleksi: bagian mana yang paling sulit? Apa yang akan kamu lakukan agar lebih paham?<textarea data-lkpd="refl" rows="3"></textarea></label>
       <label class="field">Seberapa yakin kamu dengan kesimpulanmu?
-        <select data-lkm="conf"><option value="">Pilih…</option><option value="1">1 – Belum yakin</option><option value="2">2 – Cukup yakin</option><option value="3">3 – Yakin</option><option value="4">4 – Sangat yakin</option></select>
+        <select data-lkpd="conf"><option value="">Pilih…</option><option value="1">1 – Belum yakin</option><option value="2">2 – Cukup yakin</option><option value="3">3 – Yakin</option><option value="4">4 – Sangat yakin</option></select>
       </label>
     </div>
 
     <div class="controls between">
-      <button id="lkmPrev" class="btn ghost" type="button">← Sebelumnya</button>
-      <button id="lkmNext" class="btn" type="button">Berikutnya →</button>
+      <button id="lkpdPrev" class="btn ghost" type="button">← Sebelumnya</button>
+      <button id="lkpdNext" class="btn" type="button">Berikutnya →</button>
     </div>
     <div class="controls">
-      <button id="btnSubmitLkm" class="btn primary" type="button">📤 Kumpulkan LKM</button>
+      <button id="btnSubmitLkpd" class="btn primary" type="button">📤 Kumpulkan LKPD</button>
       <button id="btnPdfMine" class="btn ghost" type="button">⬇ Unduh PDF</button>
     </div>
-    <p id="lkmStatus" class="note" aria-live="polite"></p>
+    <p id="lkpd Status" class="note" aria-live="polite"></p>
   </div>
 </section>
 
@@ -245,7 +245,7 @@
 <section id="tab-teacher" class="tab">
   <div id="tGate" class="card">
     <h2>👩‍🏫 Panel Guru</h2>
-    <p class="muted">Masukkan PIN guru untuk melihat rekap nilai, status LKM, serta mengunduh PDF dan CSV.</p>
+    <p class="muted">Masukkan PIN guru untuk melihat rekap nilai, status LKPD, serta mengunduh PDF dan CSV.</p>
     <form id="pinForm" class="builder" autocomplete="off">
       <label>PIN<input id="pinInput" type="password" inputmode="numeric" maxlength="16" autocomplete="off"></label>
       <button class="btn primary" type="submit">Masuk</button>
@@ -267,7 +267,7 @@
       </div>
       <h3>Rekap per Siswa</h3>
       <div class="table-wrap">
-        <table class="tbl"><thead><tr><th>Nama</th><th>Kelas</th><th>Kuis terbaik</th><th>Latihan</th><th>LKM</th><th>Skor LKM</th><th>PDF</th><th>Aksi</th></tr></thead><tbody id="tRekapBody"></tbody></table>
+        <table class="tbl"><thead><tr><th>Nama</th><th>Kelas</th><th>Kuis terbaik</th><th>Latihan</th><th>LKPD</th><th>Skor LKPD</th><th>PDF</th><th>Aksi</th></tr></thead><tbody id="tRekapBody"></tbody></table>
       </div>
       <h3>Riwayat Nilai</h3>
       <div class="table-wrap">
