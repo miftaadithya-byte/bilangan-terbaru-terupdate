@@ -1,7 +1,7 @@
 'use strict';
 /* =====================================================================
    MathQuest SMP Kelas VII – Bilangan Bulat
-   Logika frontend: canvas garis bilangan, discovery learning, LKM,
+   Logika frontend: canvas garis bilangan, discovery learning, LKPD,
    latihan/kuis adaptif, sinkronisasi Google Sheets, panel guru, PDF/CSV.
    ===================================================================== */
 
@@ -306,10 +306,10 @@ const Sync = {
         } catch { remain.push(it); }
       }
       save('mq_queue', remain);
-    } finally { this.busy = false; this.badge(); LKM.renderStatus(); }
+    } finally { this.busy = false; this.badge(); LKPD.renderStatus(); }
   },
   markSynced(it) {
-    if (it.kind === 'lkm') { const k = `mq_lkmsaved_${it.id.replace(/^lkm_/, '')}`; const v = load(k, null); if (v && v.ts === it.data.ts) { v.synced = true; save(k, v); } }
+    if (it.kind === 'lkpd') { const k = `mq_lkpdsaved_${it.id.replace(/^lkpd_/, '')}`; const v = load(k, null); if (v && v.ts === it.data.ts) { v.synced = true; save(k, v); } }
     else { const arr = load('mq_scores', []); const e = arr.find(x => x.id === it.id); if (e) { e.synced = true; save('mq_scores', arr); } }
   },
   badge() {
@@ -324,13 +324,13 @@ function showTab(id) {
   $$('.tab').forEach(t => t.classList.toggle('active', t.id === 'tab-' + id));
   $$('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === id));
   window.scrollTo({ top: 0, behavior: 'smooth' });
-  if (id === 'lkm') LKM.onEnter();
+  if (id === 'lkpd') LKPD.onEnter();
   if (id === 'summary') Summary.render();
   setTimeout(() => [Lab.nl, Summary.nl, Fb.nl].forEach(n => n && n.resize()), 60);
 }
 function updateUserChip() { $('#userName').textContent = user ? `${user.nama} · ${user.kelas}` : 'Tamu'; }
 function bootUser() {
-  updateUserChip(); Lab.load(); Hyp.load(); LKM.load(); Explore.render(); Summary.render(); Play.home(); Sync.badge();
+  updateUserChip(); Lab.load(); Hyp.load(); LKPD.load(); Explore.render(); Summary.render(); Play.home(); Sync.badge();
 }
 
 /* ===================== EKSPLORASI: LAB ROKET ===================== */
@@ -409,7 +409,7 @@ const Lab = {
       ? this.rows.map(r => `<tr><td>${esc(exprOf(r.a, r.op, r.b))}</td><td><b>${esc(fmt(r.hasil))}</b></td></tr>`).join('')
       : '<tr><td colspan="2" class="muted">Belum ada data. Catat hasil dari laboratorium roket.</td></tr>';
     $('#obsBody').innerHTML = html;
-    const lk = $('#lkmObsBody'); if (lk) lk.innerHTML = html;
+    const lk = $('#lkpdObsBody'); if (lk) lk.innerHTML = html;
   },
   has(t) { return this.rows.find(r => r.key === rowKey(...t)); },
 };
@@ -512,46 +512,46 @@ const Summary = {
   },
 };
 
-/* ===================== LKM ===================== */
+/* ===================== LKPD ===================== */
 const EXP_KEYS = ['a', 'b', 'r1', 'r2', 'r3', 'r4'];
-const LKM = {
+const LKPD = {
   step: 0, d: null,
   blank() { return { o1: '', o2: '', o3: '', hip1: '', hip2: '', concl: '', refl: '', conf: '', exp: [0, 1, 2].map(() => ({ a: '', b: '', r1: '', r2: '', r3: '', r4: '' })) }; },
   init() {
     $('#expBody').innerHTML = [0, 1, 2].map(i => `<tr>${EXP_KEYS.map(k => `<td><input data-exp="${i}.${k}" type="text" inputmode="text" autocomplete="off" aria-label="Baris ${i + 1} ${k}"><span class="chk" id="chk-${i}-${k}"></span></td>`).join('')}</tr>`).join('');
-    $$('[data-lkm]').forEach(el => el.addEventListener('input', () => { this.d[el.dataset.lkm] = el.value; this.persist(); this.stepMarks(); }));
+    $$('[data-lkpd]').forEach(el => el.addEventListener('input', () => { this.d[el.dataset.lkpd] = el.value; this.persist(); this.stepMarks(); }));
     $$('[data-exp]').forEach(el => el.addEventListener('input', () => { const [i, k] = el.dataset.exp.split('.'); this.d.exp[+i][k] = el.value; this.checkExp(+i); this.persist(); this.stepMarks(); }));
-    $$('.lkm-step').forEach(b => b.onclick = () => this.go(+b.dataset.step));
-    $('#lkmPrev').onclick = () => this.go(this.step - 1);
-    $('#lkmNext').onclick = () => this.go(this.step + 1);
-    $('#btnSubmitLkm').onclick = () => this.submit();
-    $('#btnPdfMine').onclick = () => { const s = load(K('lkmsaved'), null); if (!s) { toast('Kumpulkan LKM dulu agar PDF bisa dibuat.'); return; } makeLkmPdf(s); };
+    $$('.lkpd-step').forEach(b => b.onclick = () => this.go(+b.dataset.step));
+    $('#lkpdPrev').onclick = () => this.go(this.step - 1);
+    $('#lkpdNext').onclick = () => this.go(this.step + 1);
+    $('#btnSubmitLkpd').onclick = () => this.submit();
+    $('#btnPdfMine').onclick = () => { const s = load(K('lkpdsaved'), null); if (!s) { toast('Kumpulkan LKPD dulu agar PDF bisa dibuat.'); return; } makeLkpdPdf(s); };
   },
   load() {
-    this.d = Object.assign(this.blank(), load(K('lkmdraft'), {}));
+    this.d = Object.assign(this.blank(), load(K('lkpddraft'), {}));
     if (!Array.isArray(this.d.exp) || this.d.exp.length !== 3) this.d.exp = this.blank().exp;
-    $$('[data-lkm]').forEach(el => { el.value = this.d[el.dataset.lkm] ?? ''; });
+    $$('[data-lkpd]').forEach(el => { el.value = this.d[el.dataset.lkpd] ?? ''; });
     $$('[data-exp]').forEach(el => { const [i, k] = el.dataset.exp.split('.'); el.value = this.d.exp[+i][k] ?? ''; });
     [0, 1, 2].forEach(i => this.checkExp(i));
     this.go(0); this.renderStatus(); Lab.renderObs();
   },
-  persist() { save(K('lkmdraft'), this.d); },
+  persist() { save(K('lkpddraft'), this.d); },
   onEnter() {
-    if (!this.d.hip1 && Hyp.h1) { this.d.hip1 = Hyp.h1; $('[data-lkm="hip1"]').value = Hyp.h1; }
-    if (!this.d.hip2 && Hyp.h2) { this.d.hip2 = Hyp.h2; $('[data-lkm="hip2"]').value = Hyp.h2; }
+    if (!this.d.hip1 && Hyp.h1) { this.d.hip1 = Hyp.h1; $('[data-lkpd="hip1"]').value = Hyp.h1; }
+    if (!this.d.hip2 && Hyp.h2) { this.d.hip2 = Hyp.h2; $('[data-lkpd="hip2"]').value = Hyp.h2; }
     this.persist(); Lab.renderObs(); this.stepMarks();
   },
   go(n) {
     this.step = Math.max(0, Math.min(3, n));
-    $$('.lkm-panel').forEach((p, i) => p.classList.toggle('active', i === this.step));
-    $$('.lkm-step').forEach((b, i) => b.classList.toggle('active', i === this.step));
-    $('#lkmPrev').disabled = this.step === 0; $('#lkmNext').disabled = this.step === 3;
+    $$('.lkpd-panel').forEach((p, i) => p.classList.toggle('active', i === this.step));
+    $$('.lkpd-step').forEach((b, i) => b.classList.toggle('active', i === this.step));
+    $('#lkpdPrev').disabled = this.step === 0; $('#lkpdNext').disabled = this.step === 3;
     this.stepMarks();
   },
   stepMarks() {
     const d = this.d, e = this.expStats();
     const ok = [d.o1.trim().length >= 20 && d.o2.trim().length >= 20, d.hip1.trim().length >= 15 && d.hip2.trim().length >= 15, e.rows >= 2, d.concl.trim().length >= 40 && d.refl.trim().length >= 15];
-    $$('.lkm-step').forEach((b, i) => b.classList.toggle('done', ok[i]));
+    $$('.lkpd-step').forEach((b, i) => b.classList.toggle('done', ok[i]));
   },
   expected(r) { const a = parseNum(r.a), b = parseNum(r.b); if (isNaN(a) || isNaN(b)) return null; return { r1: a - b, r2: a - b, r3: a + b, r4: a + b }; },
   checkExp(i) {
@@ -568,9 +568,9 @@ const LKM = {
     return { rows, correct };
   },
   renderStatus() {
-    const s = load(K('lkmsaved'), null), el = $('#lkmStatus'); if (!el) return;
+    const s = load(K('lkpdsaved'), null), el = $('#lkpdStatus'); if (!el) return;
     if (!s) { el.textContent = 'Belum dikumpulkan.'; return; }
-    el.textContent = `Terkumpul ${fmtTime(s.ts)} · skor LKM ${s.skor} · ${s.synced ? '☁️ sudah tersinkron ke guru' : (Sync.on ? '⏳ tersimpan lokal, menunggu sinkron' : '💾 tersimpan lokal (backend belum diatur)')}`;
+    el.textContent = `Terkumpul ${fmtTime(s.ts)} · skor LKPD ${s.skor} · ${s.synced ? '☁️ sudah tersinkron ke guru' : (Sync.on ? '⏳ tersimpan lokal, menunggu sinkron' : '💾 tersimpan lokal (backend belum diatur)')}`;
   },
   submit() {
     const d = this.d, miss = [];
@@ -586,14 +586,14 @@ const LKM = {
       ((h1 + h2) / 6) * 20 + (e.correct / 12) * 30 +
       (d.concl.trim().length >= 40 ? 20 : 0) + (d.refl.trim().length >= 15 ? 10 : 0));
     const payload = {
-      id: 'lkm_' + uid(), ts: Date.now(), nama: user.nama, kelas: user.kelas, skor, status: 'Terkumpul', bantuan: Lab.hint,
+      id: 'lkpd_' + uid(), ts: Date.now(), nama: user.nama, kelas: user.kelas, skor, status: 'Terkumpul', bantuan: Lab.hint,
       obs: Lab.rows.map(r => ({ soal: exprOf(r.a, r.op, r.b), hasil: r.hasil })),
       o1: d.o1.trim(), o2: d.o2.trim(), o3: d.o3.trim(), hip1: d.hip1.trim(), hip2: d.hip2.trim(),
       exp: d.exp.filter(r => this.expected(r)), concl: d.concl.trim(), refl: d.refl.trim(), conf: d.conf, synced: false,
     };
-    save(K('lkmsaved'), payload);
-    Sync.push({ kind: 'lkm', id: payload.id, data: payload });
-    this.renderStatus(); toast('LKM tersimpan ✓'); Sync.badge();
+    save(K('lkpdsaved'), payload);
+    Sync.push({ kind: 'lkpd', id: payload.id, data: payload });
+    this.renderStatus(); toast('LKPD tersimpan ✓'); Sync.badge();
   },
 };
 
@@ -702,16 +702,16 @@ const Fb = {
 
 /* ===================== PDF & CSV ===================== */
 const pdfSafe = s => String(s ?? '').replace(/[−–—]/g, '-').replace(/[“”]/g, '"').replace(/[‘’]/g, "'").replace(/[^\x09\x0A\x20-\x7E\u00A0-\u00FF]/g, '');
-function makeLkmPdf(p) {
+function makeLkpdPdf(p) {
   const lib = window.jspdf && window.jspdf.jsPDF;
   if (!lib) { toast('Pustaka PDF belum termuat (cek koneksi internet).'); return; }
   const doc = new lib({ unit: 'mm', format: 'a4' }), M = 16, TW = 210 - 2 * M; let y = 18;
   const ensure = h => { if (y + h > 282) { doc.addPage(); y = 18; } };
   const H = (t, sz = 13) => { ensure(10); doc.setFont('helvetica', 'bold'); doc.setFontSize(sz); doc.setTextColor(30, 50, 120); doc.text(pdfSafe(t), M, y); y += 7; doc.setTextColor(0); };
   const P = (t, bold) => { doc.setFont('helvetica', bold ? 'bold' : 'normal'); doc.setFontSize(10.5); const ls = doc.splitTextToSize(pdfSafe(t) || '-', TW); ls.forEach(l => { ensure(6); doc.text(l, M, y); y += 5.2; }); y += 1.5; };
-  H('LKM Digital - MathQuest SMP Kelas VII', 15);
+  H('LKPD Digital - MathQuest SMP Kelas VII', 15);
   P('Topik: Bilangan Bulat (Penjumlahan & Pengurangan)', true);
-  P(`Nama: ${p.nama}   |   Kelas: ${p.kelas}   |   Dikumpulkan: ${fmtTime(p.ts)}   |   Skor LKM: ${p.skor}/100   |   Bantuan roket: ${p.bantuan || 0}x`);
+  P(`Nama: ${p.nama}   |   Kelas: ${p.kelas}   |   Dikumpulkan: ${fmtTime(p.ts)}   |   Skor LKPD: ${p.skor}/100   |   Bantuan roket: ${p.bantuan || 0}x`);
   y += 2; H('1. Observation (Pengamatan)');
   (p.obs || []).forEach(r => P(`${r.soal} = ${fmt(r.hasil)}`));
   P('Temuan: ' + p.o1); P('Arah roket saat tanda "-": ' + p.o2); if (p.o3) P('Pertanyaan: ' + p.o3);
@@ -719,7 +719,7 @@ function makeLkmPdf(p) {
   H('3. Experiment (Percobaan)');
   (p.exp || []).forEach(r => P(`a=${r.a}, b=${r.b} | a-b=${r.r1} | a+(-b)=${r.r2} | a-(-b)=${r.r3} | a+b=${r.r4}`));
   H('4. Conclusion (Kesimpulan)'); P(p.concl); P('Refleksi: ' + p.refl); P('Tingkat keyakinan: ' + (p.conf || '-') + ' / 4');
-  doc.save(`LKM_${slug(p.nama)}_${slug(p.kelas)}.pdf`);
+  doc.save(`LKPD_${slug(p.nama)}_${slug(p.kelas)}.pdf`);
 }
 function csvCell(v) {
   let s = v == null ? '' : String(v);
@@ -734,7 +734,7 @@ function downloadCsv(name, head, rows) {
 
 /* ===================== PANEL GURU ===================== */
 const Teacher = {
-  token: null, mode: 'lokal', nilai: [], lkm: [], rekap: [],
+  token: null, mode: 'lokal', nilai: [], lkpd: [], rekap: [],
   init() {
     this.token = sessionStorage.getItem('mq_tok');
     $('#pinForm').onsubmit = e => { e.preventDefault(); this.login($('#pinInput').value.trim()); };
@@ -742,7 +742,7 @@ const Teacher = {
     $('#btnTLogout').onclick = () => this.logout();
     $('#btnTReset').onclick = () => this.resetAll();
     $('#tSearch').oninput = () => this.render(); $('#tKelas').onchange = () => this.render();
-    $('#btnCsvRekap').onclick = () => downloadCsv('rekap_siswa.csv', ['Nama', 'Kelas', 'Kuis terbaik', 'Jumlah sesi', 'Status LKM', 'Skor LKM'], this.filtered().map(r => [r.nama, r.kelas, r.kuis ?? '', r.sesi, r.lkm ? r.lkm.status : 'Belum', r.lkm ? r.lkm.skor : '']));
+    $('#btnCsvRekap').onclick = () => downloadCsv('rekap_siswa.csv', ['Nama', 'Kelas', 'Kuis terbaik', 'Jumlah sesi', 'Status LKPD', 'Skor LKPD'], this.filtered().map(r => [r.nama, r.kelas, r.kuis ?? '', r.sesi, r.lkpd ? r.lkpd.status : 'Belum', r.lkpd ? r.lkpd.skor : '']));
     $('#btnCsvRiwayat').onclick = () => downloadCsv('riwayat_nilai.csv', ['Waktu', 'Nama', 'Kelas', 'Mode', 'Skor', 'Benar', 'Total', 'Level akhir', 'Durasi (dtk)', 'Bantuan'], this.nilai.filter(n => this.match(n)).sort((a, b) => b.ts - a.ts).map(n => [fmtTime(n.ts), n.nama, n.kelas, n.mode, n.skor, n.benar, n.total, n.level, n.durasi, n.bantuan ?? '']));
     if (this.token || (!Sync.on && sessionStorage.getItem('mq_tlocal'))) this.enter();
   },
@@ -763,14 +763,14 @@ const Teacher = {
   wipeLocal(m) { // m = null (semua data) atau {nama, kelas}
     if (!m) {
       ['mq_scores', 'mq_queue'].forEach(k => localStorage.removeItem(k));
-      const pre = ['mq_lkmsaved_', 'mq_lab_', 'mq_hyp_', 'mq_lkmdraft_'];
+      const pre = ['mq_lkpdsaved_', 'mq_lab_', 'mq_hyp_', 'mq_lkpddraft_'];
       for (let i = localStorage.length - 1; i >= 0; i--) { const k = localStorage.key(i); if (k && pre.some(p => k.startsWith(p))) localStorage.removeItem(k); }
       return;
     }
     const same = x => x && slug(x.nama) === slug(m.nama) && slug(x.kelas) === slug(m.kelas), id = slug(m.nama) + '__' + slug(m.kelas);
     save('mq_scores', load('mq_scores', []).filter(n => !same(n)));
     save('mq_queue', load('mq_queue', []).filter(q => !same(q.data)));
-    ['lkmsaved', 'lab', 'hyp', 'lkmdraft'].forEach(n => localStorage.removeItem(`mq_${n}_${id}`));
+    ['lkpdsaved', 'lab', 'hyp', 'lkpddraft'].forEach(n => localStorage.removeItem(`mq_${n}_${id}`));
   },
   async remote(params) {
     if (!Sync.on) return true;
@@ -781,13 +781,13 @@ const Teacher = {
     } catch { toast('Server tidak terjangkau; data belum dihapus.'); return false; }
   },
   async delStudent(r) {
-    if (!confirm(`Hapus semua hasil ${r.nama} (${r.kelas})?\nNilai dan LKM siswa ini akan hilang dan tidak dapat dikembalikan.`)) return;
+    if (!confirm(`Hapus semua hasil ${r.nama} (${r.kelas})?\nNilai dan LKPD siswa ini akan hilang dan tidak dapat dikembalikan.`)) return;
     if (!(await this.remote({ action: 'del', nama: r.nama, kelas: r.kelas }))) return;
     this.wipeLocal({ nama: r.nama, kelas: r.kelas });
     toast('Data siswa dihapus.'); await this.reload(); bootUser();
   },
   async resetAll() {
-    const t = prompt('PERINGATAN: semua nilai dan LKM seluruh siswa akan dihapus permanen.\nKetik HAPUS untuk melanjutkan:');
+    const t = prompt('PERINGATAN: semua nilai dan LKPD seluruh siswa akan dihapus permanen.\nKetik HAPUS untuk melanjutkan:');
     if (t === null) return;
     if (t.trim().toUpperCase() !== 'HAPUS') { toast('Dibatalkan: kata konfirmasi tidak sesuai.'); return; }
     if (!(await this.remote({ action: 'clear' }))) return;
@@ -795,28 +795,28 @@ const Teacher = {
     toast('Semua data dihapus. Rekap kembali baru.'); await this.reload(); bootUser();
   },
   localData() {
-    const nilai = load('mq_scores', []), lkm = [];
-    for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && k.startsWith('mq_lkmsaved_')) { const v = load(k, null); if (v) lkm.push(v); } }
-    return { nilai, lkm };
+    const nilai = load('mq_scores', []), lkpd = [];
+    for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && k.startsWith('mq_lkpdsaved_')) { const v = load(k, null); if (v) lkpd.push(v); } }
+    return { nilai, lkpd };
   },
   async reload() {
-    const loc = this.localData(); let nilai = loc.nilai.slice(), lkm = loc.lkm.slice();
+    const loc = this.localData(); let nilai = loc.nilai.slice(), lkpd = loc.lkpd.slice();
     if (Sync.on) {
       try {
-        const [a, b] = await Promise.all([jsonp({ action: 'list', kind: 'nilai', token: this.token }), jsonp({ action: 'list', kind: 'lkm', token: this.token })]);
+        const [a, b] = await Promise.all([jsonp({ action: 'list', kind: 'nilai', token: this.token }), jsonp({ action: 'list', kind: 'lkpd', token: this.token })]);
         if (!a.ok || !b.ok) { toast((a.error || b.error || 'Sesi berakhir') + ' — masuk ulang.'); this.logout(); return; }
         const mergeBy = (arr, extra) => { const m = new Map(arr.map(x => [x.id, x])); extra.forEach(x => { const o = m.get(x.id); if (!o || Number(x.ts) >= Number(o.ts)) m.set(x.id, x); }); return [...m.values()]; };
-        nilai = mergeBy(nilai, a.rows || []); lkm = mergeBy(lkm, (b.rows || []).map(r => ({ ...(r.data || {}), id: r.id, ts: r.ts, nama: r.nama, kelas: r.kelas, skor: r.skor, status: r.status })));
+        nilai = mergeBy(nilai, a.rows || []); lkpd = mergeBy(lkpd, (b.rows || []).map(r => ({ ...(r.data || {}), id: r.id, ts: r.ts, nama: r.nama, kelas: r.kelas, skor: r.skor, status: r.status })));
         this.mode = 'online';
       } catch { toast('Gagal memuat dari server; menampilkan data lokal.'); this.mode = 'lokal (server tidak terjangkau)'; }
     } else this.mode = 'lokal';
-    this.nilai = nilai; this.lkm = lkm; this.build();
+    this.nilai = nilai; this.lkpd = lkpd; this.build();
   },
   build() {
     const map = new Map(), key = (n, k) => slug(n) + '|' + slug(k);
-    const get = (n, k) => { const id = key(n, k); if (!map.has(id)) map.set(id, { nama: n, kelas: k, kuis: null, sesi: 0, lkm: null }); return map.get(id); };
+    const get = (n, k) => { const id = key(n, k); if (!map.has(id)) map.set(id, { nama: n, kelas: k, kuis: null, sesi: 0, lkpd: null }); return map.get(id); };
     this.nilai.forEach(n => { const r = get(n.nama, n.kelas); r.sesi++; if (n.mode === 'kuis') r.kuis = Math.max(r.kuis ?? 0, Number(n.skor)); });
-    this.lkm.forEach(l => { get(l.nama, l.kelas).lkm = l; });
+    this.lkpd.forEach(l => { get(l.nama, l.kelas).lkpd = l; });
     this.rekap = [...map.values()].sort((a, b) => (a.kelas + a.nama).localeCompare(b.kelas + b.nama));
     const ks = [...new Set(this.rekap.map(r => r.kelas))].sort(), sel = $('#tKelas'), cur = sel.value;
     sel.innerHTML = '<option value="">Semua kelas</option>' + ks.map(k => `<option>${esc(k)}</option>`).join(''); sel.value = ks.includes(cur) ? cur : '';
@@ -828,9 +828,9 @@ const Teacher = {
     const rows = this.filtered(), kuis = rows.filter(r => r.kuis !== null);
     const avg = kuis.length ? Math.round(kuis.reduce((s, r) => s + r.kuis, 0) / kuis.length) : '–';
     $('#tMode').textContent = 'Mode: ' + this.mode;
-    $('#tStats').innerHTML = `<div class="stat"><b>${rows.length}</b><small>Siswa</small></div><div class="stat"><b>${avg}</b><small>Rata-rata kuis terbaik</small></div><div class="stat"><b>${rows.filter(r => r.lkm).length}/${rows.length}</b><small>LKM terkumpul</small></div>`;
-    $('#tRekapBody').innerHTML = rows.length ? rows.map((r, i) => `<tr><td>${esc(r.nama)}</td><td>${esc(r.kelas)}</td><td>${r.kuis ?? '–'}</td><td>${r.sesi}</td><td>${r.lkm ? '✅ Terkumpul' : '⬜ Belum'}</td><td>${r.lkm ? esc(r.lkm.skor) : '–'}</td><td>${r.lkm ? `<button class="btn sm pdf" data-i="${i}" type="button">PDF</button>` : ''}</td><td><button class="btn sm red del" data-i="${i}" type="button">🗑 Hapus</button></td></tr>`).join('') : '<tr><td colspan="8" class="muted">Belum ada data.</td></tr>';
-    $$('#tRekapBody .pdf').forEach(b => b.onclick = () => { const l = rows[+b.dataset.i].lkm; if (!l.o1 && Sync.on) { toast('Data LKM lengkap belum tersedia; muat ulang.'); return; } makeLkmPdf(l); });
+    $('#tStats').innerHTML = `<div class="stat"><b>${rows.length}</b><small>Siswa</small></div><div class="stat"><b>${avg}</b><small>Rata-rata kuis terbaik</small></div><div class="stat"><b>${rows.filter(r => r.lkpd).length}/${rows.length}</b><small>LKPD terkumpul</small></div>`;
+    $('#tRekapBody').innerHTML = rows.length ? rows.map((r, i) => `<tr><td>${esc(r.nama)}</td><td>${esc(r.kelas)}</td><td>${r.kuis ?? '–'}</td><td>${r.sesi}</td><td>${r.lkpd ? '✅ Terkumpul' : '⬜ Belum'}</td><td>${r.lkpd ? esc(r.lkpd.skor) : '–'}</td><td>${r.lkpd ? `<button class="btn sm pdf" data-i="${i}" type="button">PDF</button>` : ''}</td><td><button class="btn sm red del" data-i="${i}" type="button">🗑 Hapus</button></td></tr>`).join('') : '<tr><td colspan="8" class="muted">Belum ada data.</td></tr>';
+    $$('#tRekapBody .pdf').forEach(b => b.onclick = () => { const l = rows[+b.dataset.i].lkpd; if (!l.o1 && Sync.on) { toast('Data LKPD lengkap belum tersedia; muat ulang.'); return; } makeLkpdPdf(l); });
     $$('#tRekapBody .del').forEach(b => b.onclick = () => this.delStudent(rows[+b.dataset.i]));
     const rw = this.nilai.filter(n => this.match(n)).sort((a, b) => b.ts - a.ts).slice(0, 200);
     $('#tRiwayatBody').innerHTML = rw.length ? rw.map(n => `<tr><td>${esc(fmtTime(n.ts))}</td><td>${esc(n.nama)}</td><td>${esc(n.kelas)}</td><td>${esc(n.mode)}</td><td><b>${esc(n.skor)}</b></td><td>${esc(n.benar)}/${esc(n.total)}</td><td>${esc(n.level)}</td></tr>`).join('') : '<tr><td colspan="7" class="muted">Belum ada riwayat.</td></tr>';
@@ -841,7 +841,7 @@ const Teacher = {
 document.addEventListener('DOMContentLoaded', () => {
   $$('.tab-btn').forEach(b => b.onclick = () => showTab(b.dataset.tab));
   $$('.go-tab').forEach(b => b.onclick = () => showTab(b.dataset.go));
-  Lab.init(); Explore.init(); Hyp.init(); Summary.init(); LKM.init(); Play.init(); Fb.init(); Teacher.init();
+  Lab.init(); Explore.init(); Hyp.init(); Summary.init(); LKPD.init(); Play.init(); Fb.init(); Teacher.init();
 
   $('#loginForm').onsubmit = e => {
     e.preventDefault();
